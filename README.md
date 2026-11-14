@@ -10,10 +10,10 @@
 
 | 항목 | 요약 | 관련 |
 |---|---|---|
-| 테이블 및 객체 생성 | 4개 테이블, 제약 19개, CREATE·ALTER·DROP, 명명 규칙, 정규화 | [`sql/schema.sql`](sql/schema.sql), [`sql/reset.sql`](sql/reset.sql) · [3장](#3-db-설계) |
-| 데이터 변경 및 검증 | INSERT·UPDATE·DELETE 전후 비교, 제약 위반 시도 11건 | [`sql/dml_verify.sql`](sql/dml_verify.sql) · [4장](#4-데이터-변경과-검증) |
-| 트랜잭션 정합성 | COMMIT·ROLLBACK, 중간 실패 시 부분 반영 없음 | [`sql/transaction.sql`](sql/transaction.sql) · [5장](#5-트랜잭션) |
-| Supabase 연동 | 회원·상품·주문 CRUD, RLS·인증(권한 정책), 예외 처리 | [`src/shoppingmall_db/`](src/shoppingmall_db), [`sql/rls.sql`](sql/rls.sql) · [6장](#6-supabase-sdk-crud) |
+| 테이블 및 객체 생성 | 4개 테이블, 제약 19개, CREATE·ALTER·DROP, 명명 규칙, 정규화 | [`sql/schema.sql`](sql/schema.sql), [`sql/reset.sql`](sql/reset.sql) · [아래 3장](#3-db-설계) |
+| 데이터 변경 및 검증 | INSERT·UPDATE·DELETE 전후 비교, 제약 위반 시도 11건 | [`sql/dml_verify.sql`](sql/dml_verify.sql) · [아래 4장](#4-데이터-변경과-검증) |
+| 트랜잭션 정합성 | COMMIT·ROLLBACK, 중간 실패 시 부분 반영 없음 | [`sql/transaction.sql`](sql/transaction.sql) · [아래 5장](#5-트랜잭션) |
+| Supabase 연동 | 회원·상품·주문 CRUD, RLS·인증(권한 정책), 예외 처리 | [`src/shoppingmall_db/`](src/shoppingmall_db), [`sql/rls.sql`](sql/rls.sql) · [아래 6장](#6-supabase-sdk-crud) |
 
 ## 2. 프로젝트 구조
 
@@ -98,12 +98,6 @@
 |---|---|---|
 | <img src="docs/images/dml-insert.png" alt="INSERT" width="800"> | <img src="docs/images/dml-update-before.png" alt="UPDATE 전" width="150"> <img src="docs/images/dml-update-after.png" alt="UPDATE 후" width="800"> | <img src="docs/images/dml-delete.png" alt="DELETE" width="800"> |
 
-### 제약 위반 시도 (일부 화면)
-
-<img src="docs/images/dml-error-check.png" alt="CHECK" width="645">
-<img src="docs/images/dml-error-unique.png" alt="UNIQUE" width="525">
-<img src="docs/images/dml-error-fk.png" alt="FK" width="800">
-
 | 시도 | 막는 제약 |
 |---|---|
 | 가격 음수 / 이름 공백 / 이름 NULL | `ck_products_price_nonneg` / `ck_products_name_not_blank` / NOT NULL |
@@ -112,33 +106,37 @@
 | 수량 0 / 같은 주문에 같은 상품 두 줄 | `ck_order_items_quantity_positive` / `uq_order_items_order_product` |
 | 주문 있는 회원 삭제 / 주문된 상품 삭제 | `fk_orders_users` / `fk_order_items_products` |
 
+제약 위반 시도를 하면 아래와 같은 화면을 확인할 수 있습니다.
+
+<img src="docs/images/dml-error-check.png" alt="CHECK" width="645">
+<img src="docs/images/dml-error-unique.png" alt="UNIQUE" width="525">
+<img src="docs/images/dml-error-fk.png" alt="FK" width="800">
+
 ## 5. 트랜잭션
 
 - [`sql/transaction.sql`](sql/transaction.sql) : 한 번의 실행 안에서 `BEGIN`부터 `COMMIT`/`ROLLBACK`까지 처리합니다.
-- SDK에서의 트랜잭션 : Supabase SDK는 호출 하나하나가 따로 처리되어 여러 테이블을 묶을 수 없습니다. 
-  - 그래서 주문 생성(주문 저장 + 주문상품 저장 + 재고 차감 + 합계 기록)과 취소(재고 복구)를 DB 함수 [`create_order` / `cancel_order`](sql/order_function.sql)로 만들고 SDK는 `rpc`로 한 번만 호출합니다. 
-  - 함수 안에서 오류가 나면 전부 취소됩니다.
+- Supabase SDK는 호출 하나하나가 따로 처리되어 여러 테이블을 묶을 수 없습니다. 
+- 그래서 주문 생성(주문 저장 + 주문상품 저장 + 재고 차감 + 합계 기록)과 취소(재고 복구)를 DB 함수 [`create_order` / `cancel_order`](sql/order_function.sql)로 만들고 SDK는 `rpc`로 한 번만 호출합니다. 
 
 | 시나리오 | 결과 | 화면 |
 |---|---|---|
-| 1. 주문 생성 → `COMMIT` | 주문·주문상품·재고 차감·합계가 모두 확정 (합계 79,900) | <img src="docs/images/tx-commit.png" alt="COMMIT" width="600"> |
+| 1. 주문 생성 → `COMMIT` | 주문·주문상품·재고 차감·합계가 모두 확정 (합계 79,900) | <img src="docs/images/tx-commit.png" alt="COMMIT" width="500"> |
 | 2. 변경 후 `ROLLBACK` | 1번 재고가 50 그대로 | <img src="docs/images/tx-rollback.png" alt="ROLLBACK" width="185"> |
 | 3. 중간 오류 → 전체 취소 | 첫 `UPDATE`가 성공해도 둘째 문장이 `ck_products_stock_nonneg` 위반으로 실패하면 전부 취소 | <img src="docs/images/tx-fail-error.png" alt="실패" width="800"> |
-| 3-검증 | 부분 반영 없음 (1번 50, 2번 30, 5번 0) | <img src="docs/images/tx-fail-verify.png" alt="검증" width="185"> |
+| 3-1. 검증 | 부분 반영 없음 (1번 50, 2번 30, 5번 0) | <img src="docs/images/tx-fail-verify.png" alt="검증" width="185"> |
 
 ## 6. Supabase SDK CRUD
 
 - `src/shoppingmall_db/`의 `products.py`, `users.py`, `orders.py`가 각각 CRUD를 제공합니다. 
-- 데모는 관리자로 로그인해 실행합니다.
-  - `uv run python scripts/demo_crud.py` (전체 출력: [`docs/outputs/demo_crud.txt`](docs/outputs/demo_crud.txt))
+- 데모는 관리자로 로그인한 뒤 실행해야 합니다.
 
-| 테이블 | 만들기 | 읽기 | 고치기 | 지우기 |
+|  | 만들기 | 읽기 | 고치기 | 지우기 |
 |---|---|---|---|---|
 | 상품 | `create_product` | `get_product`, `list_products` | `update_product` | `delete_product` |
 | 회원 | `create_user` | `get_user`, `get_user_by_email`, `list_users` | `update_user` | `delete_user`, `restore_user` |
 | 주문 | `create_order` | `get_order`, `list_orders` | `update_order_status` | `cancel_order` |
 
-실행 결과는 아래 링크에서 확인할 수 있습니다. (`demo_crud.txt` 한 파일에 세 구간이 이어서 출력됩니다.)
+- 실행 결과는 아래 링크에서 확인할 수 있습니다. (`demo_crud.txt` 한 파일에 세 구간이 이어서 출력됩니다.)
 
 | 구간 | 보여주는 것 | 결과 |
 |---|---|---|
