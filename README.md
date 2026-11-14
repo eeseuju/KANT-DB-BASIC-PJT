@@ -6,6 +6,18 @@
 - 도구: Python 3.13, uv, Supabase(PostgreSQL), `supabase` · `python-dotenv`
 - 모든 결과는 실제 실행 결과입니다. 화면은 `docs/images`, 데모 출력 텍스트는 `docs/outputs`에 있습니다.
 
+> [!NOTE]
+> **목차**  
+> 1. [주요 구현항목](#1-주요-구현항목)
+> 2. [프로젝트 구조](#2-프로젝트-구조)
+> 3. [DB 설계](#3-db-설계)
+> 4. [데이터 변경과 검증](#4-데이터-변경과-검증)
+> 5. [트랜잭션](#5-트랜잭션)
+> 6. [Supabase SDK CRUD](#6-supabase-sdk-crud)
+> 7. [RLS와 인증](#7-rls와-인증)
+> 8. [예외 처리](#8-예외-처리)
+> 9. [실행 방법](#9-실행-방법)
+
 ## 1. 주요 구현항목
 
 | 항목 | 요약 | 관련 |
@@ -196,7 +208,7 @@
 | `BusinessRuleError` | `P0001` | 재고 부족 (DB 함수의 `raise exception`) |
 | `AuthenticationError` | - | 로그인 실패 |
 
-## 9. 재현 방법
+## 9. 실행 방법
 
 
 1. **준비**: Python 3.13, uv, Supabase
