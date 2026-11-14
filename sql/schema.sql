@@ -5,6 +5,7 @@ create table public.users (
     name        text         not null,
     phone       text,
     created_at  timestamptz  not null default now(),
+    deleted_at  timestamptz,
     constraint pk_users primary key (id),
     constraint uq_users_email unique (email)
 );
