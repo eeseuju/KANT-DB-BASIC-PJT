@@ -16,7 +16,7 @@
 > 7. [RLS와 인증](#7-rls와-인증)
 > 8. [예외 처리](#8-예외-처리)
 > 9. [실행 방법](#9-실행-방법)
-<br />
+<br>
 
 ## 1. 주요 구현항목
 
@@ -26,7 +26,7 @@
 | 데이터 변경 및 검증 | INSERT·UPDATE·DELETE 전후 비교, 제약 위반 시도 11건 | [`sql/dml_verify.sql`](sql/dml_verify.sql) · [아래 4장](#4-데이터-변경과-검증) |
 | 트랜잭션 정합성 | COMMIT·ROLLBACK, 중간 실패 시 부분 반영 없음 | [`sql/transaction.sql`](sql/transaction.sql) · [아래 5장](#5-트랜잭션) |
 | Supabase 연동 | 회원·상품·주문 CRUD, RLS·인증(권한 정책), 예외 처리 | [`src/shoppingmall_db/`](src/shoppingmall_db), [`sql/rls.sql`](sql/rls.sql) · [아래 6장](#6-supabase-sdk-crud) |
-<br />
+<br>
 
 ## 2. 프로젝트 구조
 
@@ -45,12 +45,12 @@
 ├── docs/outputs/            # 데모 실행 출력(텍스트)
 └── .env.example             # 필요한 환경변수 이름
 ```
-<br />
+<br>
 
 ## 3. DB 설계
 
 ![스키마 다이어그램](docs/images/schema-diagram.png)
-<br />
+<br>
 
 ### users (회원)
 
@@ -102,7 +102,7 @@
 | `quantity` | integer | NOT NULL, CHECK `ck_order_items_quantity_positive` (> 0) |
 | `unit_price` | integer | NOT NULL, CHECK `ck_order_items_unit_price_nonneg`. 주문 시점 가격을 복사해 저장 |
 | (복합) | | **UNIQUE** `uq_order_items_order_product` (`order_id`, `product_id`) |
-<br />
+<br>
 
 ## 4. 데이터 변경과 검증
 
@@ -127,7 +127,7 @@
 <img src="docs/images/dml-error-check.png" alt="CHECK" width="645">
 <img src="docs/images/dml-error-unique.png" alt="UNIQUE" width="525">
 <img src="docs/images/dml-error-fk.png" alt="FK" width="800">
-<br />
+<br>
 
 ## 5. 트랜잭션
 
@@ -141,7 +141,7 @@
 | 2. 변경 후 `ROLLBACK` | 1번 재고가 50 그대로 | <img src="docs/images/tx-rollback.png" alt="ROLLBACK" width="185"> |
 | 3. 중간 오류 → 전체 취소 | 첫 `UPDATE`가 성공해도 둘째 문장이 `ck_products_stock_nonneg` 위반으로 실패하면 전부 취소 | <img src="docs/images/tx-fail-error.png" alt="실패" width="800"> |
 | 3-1. 검증 | 부분 반영 없음 (1번 50, 2번 30, 5번 0) | <img src="docs/images/tx-fail-verify.png" alt="검증" width="185"> |
-<br />
+<br>
 
 ## 6. Supabase SDK CRUD
 
@@ -161,7 +161,7 @@
 | 상품 CRUD | 생성·조회·수정·삭제, 음수 가격 거절, 주문된 상품 삭제 거절 | [`demo_crud.txt`](docs/outputs/demo_crud.txt#L3-L45) |
 | 회원 CRUD | 소프트삭제·복구, 삭제 후 조회에서 제외, 삭제 시 주문 수 유지 | [`demo_crud.txt`](docs/outputs/demo_crud.txt#L47-L115) |
 | 주문 CRUD + 트랜잭션 | 생성 → 상태 변경 → 취소 및 재고 복구, 재고 부족 시 전체 취소 | [`demo_crud.txt`](docs/outputs/demo_crud.txt#L117-L173) |
-<br />
+<br>
 
 ## 7. RLS와 인증
 
@@ -196,7 +196,7 @@
 </td>
 </tr>
 </table>
-<br />
+<br>
 
 ## 8. 예외 처리
 
@@ -215,7 +215,7 @@
 | `PermissionDeniedError` | `42501` | RLS가 막음 |
 | `BusinessRuleError` | `P0001` | 재고 부족 (DB 함수의 `raise exception`) |
 | `AuthenticationError` | - | 로그인 실패 |
-<br />
+<br>
 
 ## 9. 실행 방법
 
