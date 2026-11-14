@@ -31,3 +31,8 @@ insert into public.order_items (order_id, product_id, quantity, unit_price) valu
     (2, 2, 1, 89000),
     (3, 4, 1, 35000),
     (3, 3, 1,  9900);
+
+-- 로그인 계정 연결 : 데모 계정이 있으면 시드 회원 1번과 연결한다. 없으면 NULL로 둔다.
+update public.users
+set auth_user_id = (select id from auth.users where email = 'demo-user@test.com')
+where id = '11111111-1111-1111-1111-111111111111';

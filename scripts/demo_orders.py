@@ -69,8 +69,8 @@ def main() -> None:
     # UPDATE: 상태 변경
     show("3. UPDATE (pending -> paid)", update_order_status(order_id, "paid"))
 
-    # 취소: 상태 cancelled + 재고 복구
-    show("4. 취소 (cancelled, 재고 복구)", cancel_order(order_id))
+    # 취소: 상태 canceled + 재고 복구
+    show("4. 취소 (canceled, 재고 복구)", cancel_order(order_id))
     print(f"  재고 내역: {stock_line()}  (시작 재고와 같아야 한다)")
 
     # 취소된 주문은 다시 취소할 수 없고 상태도 못 바꾼다

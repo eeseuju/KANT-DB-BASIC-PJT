@@ -54,7 +54,7 @@ def update_order_status(order_id: int, status: str) -> dict | None:
         .table(TABLE)
         .update({'status': status})
         .eq('id', order_id)
-        .neq('status', 'cancelled')
+        .neq('status', 'canceled')
         .execute()
     )
     return get_order(order_id) if res.data else None

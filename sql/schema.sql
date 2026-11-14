@@ -1,13 +1,17 @@
 -- 1. 회원
 create table public.users (
-    id          uuid         not null default gen_random_uuid(),
-    email       text         not null,
-    name        text         not null,
-    phone       text,
-    created_at  timestamptz  not null default now(),
-    deleted_at  timestamptz,
+    id            uuid         not null default gen_random_uuid(),
+    email         text         not null,
+    name          text         not null,
+    phone         text,
+    created_at    timestamptz  not null default now(),
+    deleted_at    timestamptz,
+    auth_user_id  uuid,
     constraint pk_users primary key (id),
-    constraint uq_users_email unique (email)
+    constraint uq_users_email unique (email),
+    constraint uq_users_auth_user_id unique (auth_user_id),
+    constraint fk_users_auth_users foreign key (auth_user_id)
+        references auth.users (id) on delete set null
 );
 
 -- 2. 상품
@@ -33,7 +37,7 @@ create table public.orders (
     constraint pk_orders primary key (id),
     constraint fk_orders_users foreign key (user_id)
         references public.users (id) on delete restrict,
-    constraint ck_orders_status check (status in ('pending', 'paid', 'shipped', 'cancelled')),
+    constraint ck_orders_status check (status in ('pending', 'paid', 'shipped', 'canceled')),
     constraint ck_orders_total_nonneg check (total_amount >= 0)
 );
 
