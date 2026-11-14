@@ -264,9 +264,9 @@ wheels = [
 ]
 
 [[package]]
-name = "kant-db-fnd"
+name = "kant-db-basic-project-shoppingmall-db"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "python-dotenv" },
     { name = "supabase" },
