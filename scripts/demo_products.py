@@ -1,4 +1,4 @@
-from postgrest.exceptions import APIError
+from shoppingmall_db.errors import ParentError
 from shoppingmall_db.products import (
     create_product,
     delete_product,
@@ -34,8 +34,8 @@ def expect_error(title: str, func, *args, **kwargs) -> None:
     try:
         func(*args, **kwargs)
         print('  !! 오류 없이 성공함 (제약이 동작하지 않는 것)')
-    except APIError as e:
-        print(f'  막힘 -> code={e.code} / {e.message}')
+    except ParentError as e:
+        print(f'  막힘 -> code={e.code} / {e}')
 
 
 # 테스트

@@ -1,6 +1,7 @@
 # 주문 CRUD 중 생성 및 취소는 DB 함수(RPC)로 하나의 트랜잭션 처리
 
 from shoppingmall_db.client import get_client
+from shoppingmall_db.errors import translate_errors
 
 
 TABLE = 'orders'
@@ -11,6 +12,7 @@ SELECT_WITH_ITEMS = '*, order_items(*, products(name))'
 
 
 # 원자적 주문 생성
+@translate_errors
 def create_order(user_id: str, items: list[dict]) -> dict:
     res = (
         get_client()
@@ -21,6 +23,7 @@ def create_order(user_id: str, items: list[dict]) -> dict:
 
 
 # 특정 주문 조회
+@translate_errors
 def get_order(order_id: int) -> dict | None:
     res = (
         get_client()
@@ -34,6 +37,7 @@ def get_order(order_id: int) -> dict | None:
 
 
 # 주문 목록 조회
+@translate_errors
 def list_orders(user_id: str | None=None, status: str | None=None) -> list[dict]:
     query = get_client().table(TABLE).select(SELECT_WITH_ITEMS).order('id', desc=True)
     if user_id is not None:
@@ -44,6 +48,7 @@ def list_orders(user_id: str | None=None, status: str | None=None) -> list[dict]
 
 
 # 주문 정보 수정
+@translate_errors
 def update_order_status(order_id: int, status: str) -> dict | None:
     
     if status not in STATUS_CHANGEABLE:
@@ -61,6 +66,7 @@ def update_order_status(order_id: int, status: str) -> dict | None:
 
 
 # 원자적 주문 취소
+@translate_errors
 def cancel_order(order_id: int) -> dict | None:
     get_client().rpc('cancel_order', {'p_order_id': order_id}).execute()
     return get_order(order_id)

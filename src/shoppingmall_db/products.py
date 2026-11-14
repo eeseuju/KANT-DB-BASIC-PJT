@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from shoppingmall_db.client import get_client
+from shoppingmall_db.errors import translate_errors
 
 
 TABLE = 'products'
@@ -7,6 +8,7 @@ UPDATABLE = {'name', 'price', 'stock'}
 
 
 # 새로운 상품 등록과 조회
+@translate_errors
 def create_product(name: str, price: int, stock: int = 0) -> dict:
     res = (
         get_client()
@@ -18,6 +20,7 @@ def create_product(name: str, price: int, stock: int = 0) -> dict:
 
 
 # 재고가 있는 상품을 조회
+@translate_errors
 def list_products(only_in_stock: bool = False) -> list[dict]:
     query = get_client().table(TABLE).select('*').order('id')
     if only_in_stock:
@@ -26,6 +29,7 @@ def list_products(only_in_stock: bool = False) -> list[dict]:
 
 
 # 해당 상품이 있는지 조회
+@translate_errors
 def get_product(product_id: int) -> dict | None:
     res = (
         get_client()
@@ -39,6 +43,7 @@ def get_product(product_id: int) -> dict | None:
 
 
 # 특정 상품의 정보를 수정
+@translate_errors
 def update_product(product_id: int, **fields) -> dict | None:
     
     unknown = set(fields) - UPDATABLE
@@ -59,6 +64,7 @@ def update_product(product_id: int, **fields) -> dict | None:
 
 
 # 특정 상품의 정보를 삭제
+@translate_errors
 def delete_product(product_id: int) -> dict | None:
     res = (
         get_client()

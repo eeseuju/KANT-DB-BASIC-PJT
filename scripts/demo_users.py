@@ -1,5 +1,5 @@
 from uuid import uuid4
-from postgrest.exceptions import APIError
+from shoppingmall_db.errors import ParentError
 from shoppingmall_db.client import get_client
 from shoppingmall_db.users import (
     create_user,
@@ -36,8 +36,8 @@ def expect_error(title: str, func, *args, **kwargs) -> None:
     try:
         func(*args, **kwargs)
         print("  !! 오류 없이 성공함 (제약이 동작하지 않는 것)")
-    except APIError as e:
-        print(f"  막힘 -> code={e.code} / {e.message}")
+    except ParentError as e:
+        print(f"  막힘 -> code={e.code} / {e}")
 
 
 # 특정 회원의 주문 수 (소프트삭제 후에도 주문이 남는지 확인용)

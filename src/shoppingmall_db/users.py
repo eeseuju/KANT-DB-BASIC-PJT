@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from shoppingmall_db.client import get_client
+from shoppingmall_db.errors import translate_errors
 
 
 TABLE = 'users'
@@ -11,6 +12,7 @@ def _now() -> str:
 
 
 # 회원 등록
+@translate_errors
 def create_user(email: str, name: str, phone: str | None=None) -> dict:
     data = {'email': email, 'name':name}
     if phone is not None:
@@ -20,6 +22,7 @@ def create_user(email: str, name: str, phone: str | None=None) -> dict:
 
 
 # 회원 목록
+@translate_errors
 def list_users(include_deleted: bool = False) -> list[dict]:
     query = get_client().table(TABLE).select('*').order('email')
     if not include_deleted:
@@ -28,6 +31,7 @@ def list_users(include_deleted: bool = False) -> list[dict]:
 
 
 # 특정 회원 조회 - 이이디
+@translate_errors
 def get_user(user_id: str, include_deleted: bool = False) -> dict | None:
     query = get_client().table(TABLE).select('*').eq('id', user_id)
     if not include_deleted:
@@ -37,6 +41,7 @@ def get_user(user_id: str, include_deleted: bool = False) -> dict | None:
 
 
 # 특정 회원 조회 - 이메일
+@translate_errors
 def get_user_by_email(email: str, include_deleted: bool = False) -> dict | None:
     query = get_client().table(TABLE).select('*').eq('email', email)
     if not include_deleted:
@@ -46,6 +51,7 @@ def get_user_by_email(email: str, include_deleted: bool = False) -> dict | None:
 
 
 # 특정 회원 정보 수정
+@translate_errors
 def update_user(user_id: str, **fields) -> dict | None:
 
     unknown = set(fields) - UPDATABLE
@@ -66,6 +72,7 @@ def update_user(user_id: str, **fields) -> dict | None:
 
 
 # 회원 탈퇴
+@translate_errors
 def delete_user(user_id: str) -> dict | None:
     res = (
         get_client()
@@ -79,6 +86,7 @@ def delete_user(user_id: str) -> dict | None:
 
 
 # 회원 탈퇴 복구
+@translate_errors
 def restore_user(user_id: str) -> dict | None:
     res = (
         get_client()
