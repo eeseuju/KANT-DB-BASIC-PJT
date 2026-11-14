@@ -172,7 +172,7 @@
 </td>
 <td valign="top">
 
-<img src="docs/images/rls-policies.png" alt="RLS 켜짐과 정책 10개" width="480">
+<img src="docs/images/rls-policies.png" alt="RLS 켜짐과 정책 10개" width="300">
 
 </td>
 </tr>
