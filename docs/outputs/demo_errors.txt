@@ -1,0 +1,48 @@
+
+======== A. 로그인 전 ========
+
+[1. 권한 없음: 로그인 없이 상품 추가]
+  PermissionDeniedError / code=42501 / constraint=None
+  메시지: 권한이 없습니다. 로그인 상태와 권한을 확인하세요.
+
+[2. 로그인 실패: 틀린 비밀번호]
+  AuthenticationError / code=None / constraint=None
+  메시지: 이메일 또는 비밀번호가 올바르지 않습니다.
+
+======== B. 관리자 (demo-admin@test.com) ========
+
+[3. 중복: 이미 있는 이메일]
+  DuplicateError / code=23505 / constraint=uq_users_email
+  메시지: 이미 사용 중인 이메일입니다.
+
+[4. 값 오류(CHECK): 이메일 형식]
+  InvalidValueError / code=23514 / constraint=ck_users_email_format
+  메시지: 이메일 형식이 올바르지 않습니다.
+
+[5. 값 오류(CHECK): 음수 가격]
+  InvalidValueError / code=23514 / constraint=ck_products_price_nonneg
+  메시지: 가격은 0 이상이어야 합니다.
+
+[6. 값 오류(NOT NULL): 상품 이름 없음]
+  InvalidValueError / code=23502 / constraint=None
+  메시지: 필수 값이 비어 있습니다: name
+
+[7. 사용 중: 주문된 상품(1번) 삭제]
+  InUseError / code=23503 / constraint=fk_order_items_products
+  메시지: 주문된 상품은 삭제할 수 없습니다. 판매를 멈추려면 재고를 0으로 하세요.
+
+[8. 업무 규칙: 재고 부족 주문(5번 상품)]
+  BusinessRuleError / code=P0001 / constraint=None
+  메시지: 재고 부족: 상품 5 (재고 0, 주문 1)
+
+[9. 업무 규칙: 없는 주문 취소]
+  BusinessRuleError / code=P0001 / constraint=None
+  메시지: 존재하지 않는 주문입니다: 99999
+
+[10. 종류별 처리: InUseError만 잡기]
+  InUseError를 잡았다 -> 삭제 대신 다른 방법을 안내: 주문된 상품은 삭제할 수 없습니다. 판매를 멈추려면 재고를 0으로 하세요.
+
+[11. 코드 실수: 고칠 수 없는 컬럼 (ValueError는 변환하지 않는다)]
+  ValueError: 수정불가항목(['id'])
+
+(데이터는 바뀌지 않았다: 상품 5개)
