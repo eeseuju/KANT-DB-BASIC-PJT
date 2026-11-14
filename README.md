@@ -120,7 +120,7 @@
 
 | 시나리오 | 결과 | 화면 |
 |---|---|---|
-| 1. 주문 생성 → `COMMIT` | 주문·주문상품·재고 차감·합계가 모두 확정 (합계 79,900) | <img src="docs/images/tx-commit.png" alt="COMMIT" width="500"> |
+| 1. 주문 생성 → `COMMIT` | 주문·주문상품·재고 차감·합계가 모두 확정 (합계 79,900) | <img src="docs/images/tx-commit.png" alt="COMMIT" width="200"> |
 | 2. 변경 후 `ROLLBACK` | 1번 재고가 50 그대로 | <img src="docs/images/tx-rollback.png" alt="ROLLBACK" width="185"> |
 | 3. 중간 오류 → 전체 취소 | 첫 `UPDATE`가 성공해도 둘째 문장이 `ck_products_stock_nonneg` 위반으로 실패하면 전부 취소 | <img src="docs/images/tx-fail-error.png" alt="실패" width="800"> |
 | 3-1. 검증 | 부분 반영 없음 (1번 50, 2번 30, 5번 0) | <img src="docs/images/tx-fail-verify.png" alt="검증" width="185"> |
@@ -157,6 +157,10 @@
  - 주문 생성·취소는 `security definer`이며 함수 안에서 호출자가 본인(관리자)인지 직접 검사합니다.
 - 한계 : `service_role` 키는 RLS를 우회하므로 사용하지 않았고, 컬럼 단위 수정 제한은 하지 않았습니다.
 
+<table>
+<tr>
+<td valign="top">
+
 | 테이블 | 비로그인 | 회원 로그인 | 관리자 로그인 |
 |---|---|---|---|
 | `products` | 읽기 | 읽기 | 읽기·쓰기 |
@@ -165,8 +169,14 @@
 | `order_items` | 없음 | 본인 주문의 줄만 읽기 | 전체 |
 | 주문 생성·취소(DB함수) | 불가 | 본인 주문만 | 전체 |
 
-<img src="docs/images/rls-policies.png" alt="RLS 켜짐과 정책 10개" width="510
-">
+</td>
+<td valign="top">
+
+<img src="docs/images/rls-policies.png" alt="RLS 켜짐과 정책 10개" width="510">
+
+</td>
+</tr>
+</table>
 
 ## 8. 예외 처리
 
