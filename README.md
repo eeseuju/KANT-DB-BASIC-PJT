@@ -6,6 +6,8 @@
 - 도구: Python 3.13, uv, Supabase(PostgreSQL), `supabase` · `python-dotenv`
 - 모든 결과는 실제 실행 결과입니다. 화면은 `docs/images`, 데모 출력 텍스트는 `docs/outputs`에 있습니다.
 
+<br>
+
 > **목차**  
 > 1. [주요 구현항목](#1-주요-구현항목)
 > 2. [프로젝트 구조](#2-프로젝트-구조)
