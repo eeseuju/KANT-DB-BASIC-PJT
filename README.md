@@ -1,6 +1,6 @@
 # PostgreSQL 객체 관리 · 트랜잭션 · Supabase SDK 연동
 
-쇼핑몰의 회원 · 상품 · 주문(+주문상품) 을 주제로 PostgreSQL(Supabase)를 설계하고, 제약조건·트랜잭션·RLS(행 단위 보안)를 적용한 뒤 Python SDK(uv 환경)로 CRUD를 구현했습니다.
+쇼핑몰의 회원 · 상품 · 주문(+주문상품) 을 주제로 PostgreSQL(Supabase)를 설계하고 제약조건·트랜잭션·RLS(행 단위 보안)를 적용한 뒤 Python SDK(uv 환경)로 CRUD를 구현했습니다.
 
 - 도구: Python 3.13, uv, Supabase(PostgreSQL), `supabase` · `python-dotenv`
 - 본 문서에 기록된 모든 결과는 실제 실행 결과입니다. 화면은 `docs/images`, 데모 출력 텍스트는 `docs/outputs`에 있습니다.
@@ -245,24 +245,26 @@
    ```
 4. **Supabase Authentication 데모 계정** : 회원, 관리자 계정 각 1개씩 Auto Confirm User로 생성
 5. **SQL문 실행 순서** (Supabase SQL Editor Run)
-   1) `sql/reset.sql` (이미 테이블이 있는 경우, 필요한 상황에서만 사용)
-   2) `sql/schema.sql`
-   3) `sql/rls.sql`
-   4) `sql/order_function.sql`
-   5) 관리자 권한 부여
+    - `sql/reset.sql` (이미 테이블이 있는 경우, 필요한 상황에서만 사용)
+   - `sql/schema.sql`
+   - `sql/rls.sql`
+   - `sql/order_function.sql`
+   - 관리자 권한 부여
+  
       ```sql
       update auth.users
       set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"role": "admin"}'::jsonb
       where email = 'demo-admin@test.com';
       ```
-   6) `sql/seed.sql` (데모 계정을 시드 1번 회원과 연결)
-6. **프로젝트 실행**
+      
+    - `sql/seed.sql` (데모 계정을 시드 1번 회원과 연결)
+7. **프로젝트 실행**
    ```powershell
    uv run python scripts/check_connection.py   # 로그인 전: users/orders/order_items는 RLS로 0행
    uv run python scripts/demo_crud.py          # 관리자: 상품·회원·주문 CRUD
    uv run python scripts/demo_rls.py           # RLS: 로그인 안 함 / 일반 회원 / 관리자
    uv run python scripts/demo_errors.py        # 예외 처리
    ```
-7. **재현 주의사항**
-- 데모는 `seed.sql` 직후 상태를 기준으로 하므로 다시 돌릴 때는 `seed.sql`부터 실행하세요. 
-- `sql/dml_verify.sql`과 `sql/transaction.sql`은 SQL Editor에서 블록별로 실행해야 합니다.
+8. **재현 주의사항**
+    - 데모는 `seed.sql` 직후 상태를 기준으로 하므로 다시 돌릴 때는 `seed.sql`부터 실행하세요. 
+    - `sql/dml_verify.sql`과 `sql/transaction.sql`은 SQL Editor에서 블록별로 실행해야 합니다.
