@@ -1,9 +1,12 @@
-# PostgreSQL 객체 관리 · 트랜잭션 · Supabase SDK 연동
+# 쇼핑몰 DB 구조 (PostgreSQL · Supabase SDK)
 
-쇼핑몰의 회원·상품·주문(+주문상품)을 주제로 PostgreSQL(Supabase)를 설계하고 제약조건·트랜잭션·RLS를 적용한 뒤 Python SDK(uv 환경)로 CRUD를 구현했습니다.
+쇼핑몰의 회원 · 상품 · 주문(+주문상품)을 주제로 PostgreSQL를 설계하고 제약조건 · 트랜잭션 · RLS를 적용한 뒤 Python SDK(uv 환경)로 CRUD를 구현했습니다.
 
-- 도구: Python 3.13, uv, Supabase(PostgreSQL), `supabase` · `python-dotenv`
-- 본 문서에 기록된 모든 결과는 실제 실행 결과입니다. 화면은 `docs/images`, 데모 출력 텍스트는 `docs/outputs`에 있습니다.
+<br>
+
+> **개발환경**
+> 
+> Python · uv · PostgreSQL (Supabase)
 
 <br>
 
@@ -111,8 +114,7 @@
 
 ## 4. 데이터 변경과 검증
 
-- [`sql/dml_verify.sql`](sql/dml_verify.sql)을 블록별로 실행합니다.
-  - 변경 전 조회 → INSERT → UPDATE → DELETE → 전후 검증 → 제약 위반 시도  
+- [`sql/dml_verify.sql`](sql/dml_verify.sql)을 블록별로 실행합니다. (조회 → INSERT → UPDATE → DELETE → 검증 → 제약 위반 시도)
 - 시드는 [`sql/seed.sql`](sql/seed.sql)이며, 11건 모두 제약 이름과 함께 거절되어야 정상입니다.
 
 | INSERT | UPDATE | DELETE |
@@ -155,7 +157,7 @@
 - `src/shoppingmall_db/`의 `products.py`, `users.py`, `orders.py`가 각각 CRUD를 제공합니다. 
 - 데모는 관리자로 로그인한 뒤 실행해야 합니다.
 
-|  | 만들기 | 읽기 | 고치기 | 지우기 |
+|  | INSERT | READ | UPDATE | DELETE |
 |---|---|---|---|---|
 | 상품 | `create_product` | `get_product`, `list_products` | `update_product` | `delete_product` |
 | 회원 | `create_user` | `get_user`, `get_user_by_email`, `list_users` | `update_user` | `delete_user`, `restore_user` |
@@ -211,7 +213,6 @@
 
 - DB가 거절하면 SDK는 `APIError(code, message)`를 던집니다. 
 - [`errors.py`](src/shoppingmall_db/errors.py)는 DB가 던지는 `APIError`를 종류별 예외로 변환(`@translate_errors`)하고 던집니다.
-  - 변환된 예외는 모두 `ParentError`의 자식이므로 부모로 한 번에 잡을 수 있습니다.
 - 실행 결과는 [`docs/outputs/demo_errors.txt`](docs/outputs/demo_errors.txt)에서 확인 가능합니다.
   - 비회원 상태 : [02~10행](docs/outputs/demo_errors.txt#L2-L10) (권한 없음, 로그인 실패)
   - 관리자 계정 : [12~48행](docs/outputs/demo_errors.txt#L12-L48) (중복, CHECK, NOT NULL, 사용 중, 업무 규칙, 종류별 처리)
