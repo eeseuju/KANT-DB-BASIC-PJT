@@ -3,7 +3,7 @@
 쇼핑몰의 회원 · 상품 · 주문(+주문상품) 을 주제로 PostgreSQL(Supabase)를 설계하고, 제약조건·트랜잭션·RLS(행 단위 보안)를 적용한 뒤 Python SDK(uv 환경)로 CRUD를 구현했습니다.
 
 - 도구: Python 3.13, uv, Supabase(PostgreSQL), `supabase` · `python-dotenv`
-- 모든 결과는 실제 실행 결과입니다. 화면은 `docs/images`, 데모 출력 텍스트는 `docs/outputs`에 있습니다.
+- 본 문서에 기록된 모든 결과는 실제 실행 결과입니다. 화면은 `docs/images`, 데모 출력 텍스트는 `docs/outputs`에 있습니다.
 
 <br>
 
